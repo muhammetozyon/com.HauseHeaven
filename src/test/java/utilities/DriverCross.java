@@ -10,52 +10,60 @@ import utilities.ConfigReader;
 
 import java.time.Duration;
 
-public class Driver {
-    static WebDriver driver;
+public class DriverCross {
 
-    public static WebDriver getDriver(){
+    private static WebDriver driver;
+    private DriverCross(){
+
+    }
+
+    public static WebDriver getDriver(String browser){
 
 
-        if(driver ==null) {
+        browser = browser==null ? ConfigReader.getProperty("browser") : browser ;
+        // bu satir bizim emniyet subabimiz
+        // eger parametre olarak null gonderilirse
+        // configuration.properties'deki browser degerini alacak
 
-            String browser = ConfigReader.getProperty("browser");
+        if(driver == null){
 
             switch (browser){
-
                 case "firefox" :
                     WebDriverManager.firefoxdriver().setup();
                     driver= new FirefoxDriver();
                     break;
 
-                case "edge"  :
+                case "edge" :
                     WebDriverManager.edgedriver().setup();
                     driver = new EdgeDriver();
                     break;
                 default:
                     WebDriverManager.chromedriver().setup();
                     driver = new ChromeDriver();
+
             }
 
+            driver.manage().window().maximize();
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
-
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
 
         return driver;
     }
 
 
     public static void closeDriver(){
-        if (driver != null) {
+
+        if (driver != null){
             driver.close();
-            driver = null;
+            driver=null;
         }
     }
 
     public static void quitDriver(){
-        if (driver != null) {
+
+        if (driver != null){
             driver.quit();
-            driver = null;
+            driver=null;
         }
     }
 }
